@@ -1,1 +1,1039 @@
-https://claude.ai/public/artifacts/551f556f-4430-4a66-aee9-4bf24c210a37
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Kani Accesorios — Punto de Venta</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --beige: #f5f0e8;
+    --beige-dark: #ede6d6;
+    --beige-deeper: #d9cfbc;
+    --gold: #c9a84c;
+    --gold-light: #e2c47a;
+    --gold-shine: #f0d98a;
+    --black: #1a1610;
+    --black-soft: #2c261c;
+    --text-muted: #7a6f5e;
+    --white: #fdfaf4;
+    --danger: #b05a4a;
+    --success: #4a7c5a;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    background: var(--beige);
+    font-family: 'Jost', sans-serif;
+    color: var(--black);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* HEADER */
+  header {
+    background: var(--black);
+    padding: 18px 20px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.3);
+  }
+
+  .logo-text {
+    text-align: center;
+    line-height: 1;
+  }
+
+  .logo-kani {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 28px;
+    font-weight: 300;
+    letter-spacing: 0.18em;
+    color: var(--gold);
+    text-transform: uppercase;
+    background: linear-gradient(135deg, var(--gold) 0%, var(--gold-shine) 50%, var(--gold) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .logo-accesorios {
+    font-family: 'Jost', sans-serif;
+    font-size: 9px;
+    font-weight: 300;
+    letter-spacing: 0.35em;
+    color: var(--gold-light);
+    text-transform: uppercase;
+    display: block;
+    margin-top: 2px;
+    opacity: 0.85;
+  }
+
+  .header-badge {
+    background: var(--gold);
+    color: var(--black);
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    padding: 3px 8px;
+    border-radius: 20px;
+    position: absolute;
+    right: 16px;
+    text-transform: uppercase;
+  }
+
+  /* MAIN CONTAINER */
+  .container {
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 0 16px 100px;
+  }
+
+  /* SECTION TITLES */
+  .section-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin: 24px 0 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(to right, var(--gold), transparent);
+    opacity: 0.4;
+  }
+
+  /* CARDS */
+  .card {
+    background: var(--white);
+    border-radius: 12px;
+    padding: 16px;
+    border: 1px solid var(--beige-deeper);
+    box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+  }
+
+  /* INPUTS */
+  .input-group {
+    margin-bottom: 12px;
+  }
+  label {
+    display: block;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+  }
+  input, select {
+    width: 100%;
+    padding: 12px 14px;
+    background: var(--beige);
+    border: 1.5px solid var(--beige-deeper);
+    border-radius: 8px;
+    font-family: 'Jost', sans-serif;
+    font-size: 15px;
+    color: var(--black);
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    appearance: none;
+  }
+  input:focus, select:focus {
+    border-color: var(--gold);
+    box-shadow: 0 0 0 3px rgba(201,168,76,0.15);
+    background: var(--white);
+  }
+  input::placeholder { color: var(--beige-deeper); }
+
+  /* PRODUCT SEARCH ROW */
+  .product-search-row {
+    display: flex;
+    gap: 8px;
+    align-items: flex-end;
+  }
+  .product-search-row .input-group { flex: 1; margin-bottom: 0; }
+  .product-search-row input { font-size: 18px; letter-spacing: 0.05em; }
+
+  .qty-group {
+    width: 70px;
+    flex-shrink: 0;
+  }
+  .qty-group input { text-align: center; font-size: 16px; }
+
+  .btn-add {
+    width: 48px;
+    height: 48px;
+    background: var(--gold);
+    border: none;
+    border-radius: 8px;
+    font-size: 24px;
+    color: var(--black);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: transform 0.15s, background 0.15s;
+    font-weight: 300;
+    align-self: flex-end;
+  }
+  .btn-add:active { transform: scale(0.93); background: var(--gold-light); }
+
+  /* QR BUTTON */
+  .btn-qr {
+    width: 100%;
+    padding: 11px;
+    background: transparent;
+    border: 1.5px dashed var(--gold);
+    border-radius: 8px;
+    color: var(--gold);
+    font-family: 'Jost', sans-serif;
+    font-size: 13px;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 10px;
+    transition: background 0.2s;
+  }
+  .btn-qr:active { background: rgba(201,168,76,0.08); }
+
+  /* PRODUCT HINT */
+  .product-hint {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 6px;
+    min-height: 18px;
+    font-style: italic;
+    transition: color 0.2s;
+  }
+  .product-hint.found { color: var(--success); font-style: normal; font-weight: 500; }
+  .product-hint.not-found { color: var(--danger); font-style: normal; }
+
+  /* CART */
+  .cart-empty {
+    text-align: center;
+    padding: 28px 0;
+    color: var(--beige-deeper);
+    font-size: 13px;
+    letter-spacing: 0.05em;
+  }
+  .cart-empty span { font-size: 32px; display: block; margin-bottom: 8px; }
+
+  .cart-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--beige-dark);
+    animation: slideIn 0.25s ease;
+  }
+  .cart-item:last-child { border-bottom: none; }
+
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .cart-item-code {
+    background: var(--black);
+    color: var(--gold);
+    font-size: 11px;
+    font-weight: 500;
+    padding: 4px 8px;
+    border-radius: 5px;
+    letter-spacing: 0.05em;
+    flex-shrink: 0;
+    min-width: 48px;
+    text-align: center;
+  }
+
+  .cart-item-info { flex: 1; min-width: 0; }
+  .cart-item-name {
+    font-size: 14px;
+    font-weight: 400;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: var(--black-soft);
+  }
+  .cart-item-detail {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 1px;
+  }
+
+  .cart-item-price {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--black);
+    flex-shrink: 0;
+  }
+
+  .btn-remove {
+    background: none;
+    border: none;
+    color: var(--beige-deeper);
+    font-size: 18px;
+    cursor: pointer;
+    padding: 4px;
+    line-height: 1;
+    transition: color 0.15s;
+    flex-shrink: 0;
+  }
+  .btn-remove:active { color: var(--danger); }
+
+  /* TOTAL */
+  .total-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 0 2px;
+    border-top: 1.5px solid var(--gold);
+    margin-top: 4px;
+  }
+  .total-label {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 16px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+  .total-amount {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 26px;
+    font-weight: 600;
+    color: var(--black);
+  }
+  .total-items {
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 0.05em;
+    text-align: right;
+    margin-top: 2px;
+  }
+
+  /* PAYMENT */
+  .payment-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .payment-option {
+    padding: 12px 8px;
+    border: 1.5px solid var(--beige-deeper);
+    border-radius: 8px;
+    text-align: center;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--text-muted);
+    background: var(--beige);
+    transition: all 0.15s;
+    user-select: none;
+    letter-spacing: 0.03em;
+  }
+  .payment-option:active { transform: scale(0.97); }
+  .payment-option.selected {
+    border-color: var(--gold);
+    background: var(--black);
+    color: var(--gold);
+    font-weight: 500;
+  }
+  .payment-option .pay-icon { font-size: 18px; display: block; margin-bottom: 4px; }
+
+  /* CONFIRM BUTTON */
+  .btn-confirm {
+    width: 100%;
+    padding: 16px;
+    background: var(--black);
+    color: var(--gold);
+    border: none;
+    border-radius: 10px;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 18px;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    cursor: pointer;
+    margin-top: 16px;
+    transition: transform 0.15s, background 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .btn-confirm::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, transparent 40%, rgba(201,168,76,0.1) 100%);
+  }
+  .btn-confirm:active { transform: scale(0.98); }
+  .btn-confirm:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  /* SUCCESS SCREEN */
+  .success-screen {
+    display: none;
+    text-align: center;
+    padding: 40px 20px;
+    animation: fadeIn 0.4s ease;
+  }
+  .success-screen.visible { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+
+  .success-icon {
+    width: 72px;
+    height: 72px;
+    background: var(--black);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+    font-size: 32px;
+  }
+  .success-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 28px;
+    font-weight: 500;
+    color: var(--black);
+    margin-bottom: 8px;
+    letter-spacing: 0.05em;
+  }
+  .success-subtitle { font-size: 14px; color: var(--text-muted); margin-bottom: 28px; line-height: 1.6; }
+
+  .export-box {
+    background: var(--white);
+    border: 1px solid var(--beige-deeper);
+    border-radius: 10px;
+    padding: 16px;
+    margin-bottom: 20px;
+    text-align: left;
+  }
+  .export-title {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 10px;
+  }
+  .export-data {
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.8;
+    font-family: monospace;
+    white-space: pre-wrap;
+    word-break: break-all;
+  }
+
+  .btn-copy {
+    width: 100%;
+    padding: 13px;
+    background: var(--gold);
+    color: var(--black);
+    border: none;
+    border-radius: 8px;
+    font-family: 'Jost', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    margin-bottom: 10px;
+    transition: transform 0.15s;
+  }
+  .btn-copy:active { transform: scale(0.97); }
+
+  .btn-new-sale {
+    width: 100%;
+    padding: 13px;
+    background: transparent;
+    color: var(--black);
+    border: 1.5px solid var(--beige-deeper);
+    border-radius: 8px;
+    font-family: 'Jost', sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    transition: border-color 0.15s;
+  }
+  .btn-new-sale:active { border-color: var(--gold); }
+
+  /* QR MODAL */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(26,22,16,0.7);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+  }
+  .modal-overlay.visible { display: flex; }
+  .modal {
+    background: var(--white);
+    border-radius: 16px;
+    padding: 24px 20px;
+    width: 90%;
+    max-width: 340px;
+    text-align: center;
+  }
+  .modal h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 20px;
+    font-weight: 500;
+    margin-bottom: 8px;
+    color: var(--black);
+  }
+  .modal p { font-size: 13px; color: var(--text-muted); margin-bottom: 16px; line-height: 1.5; }
+  #qr-reader { width: 100%; border-radius: 8px; overflow: hidden; }
+  .btn-close-modal {
+    margin-top: 14px;
+    width: 100%;
+    padding: 11px;
+    background: var(--beige);
+    border: 1px solid var(--beige-deeper);
+    border-radius: 8px;
+    font-family: 'Jost', sans-serif;
+    font-size: 14px;
+    cursor: pointer;
+  }
+
+  /* TOAST */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: var(--black);
+    color: var(--gold);
+    padding: 10px 20px;
+    border-radius: 20px;
+    font-size: 13px;
+    letter-spacing: 0.05em;
+    z-index: 300;
+    transition: transform 0.3s ease;
+    white-space: nowrap;
+  }
+  .toast.visible { transform: translateX(-50%) translateY(0); }
+
+  /* DECORATIVE LINE */
+  .deco-line {
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--gold), transparent);
+    opacity: 0.3;
+    margin: 20px 0;
+  }
+
+  /* CATALOG HINT */
+  .catalog-note {
+    font-size: 11px;
+    color: var(--text-muted);
+    text-align: center;
+    margin-top: 10px;
+    letter-spacing: 0.05em;
+    line-height: 1.5;
+  }
+  .catalog-note a {
+    color: var(--gold);
+    text-decoration: none;
+    font-weight: 500;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo-text">
+    <span class="logo-kani">Kani</span>
+    <span class="logo-accesorios">A C C E S O R I O S</span>
+  </div>
+  <div class="header-badge">POS</div>
+</header>
+
+<div class="container" id="main-view">
+
+  <!-- CLIENTE -->
+  <div class="section-title">Cliente & Vendedora</div>
+  <div class="card">
+    <div class="input-group">
+      <label>Nombre de la clienta</label>
+      <input type="text" id="client-name" placeholder="Ej: María González" autocomplete="off">
+    </div>
+    <div class="input-group" style="margin-bottom:0">
+      <label>Vendedora</label>
+      <input type="text" id="vendedor" placeholder="Ej: Katherine, Daniela..." autocomplete="off">
+    </div>
+  </div>
+
+  <!-- AGREGAR PRODUCTO -->
+  <div class="section-title">Agregar producto</div>
+  <div class="card">
+    <div class="product-search-row">
+      <div class="input-group">
+        <label>Código (4 dígitos)</label>
+        <input type="text" id="product-code" placeholder="0000" maxlength="4" inputmode="numeric" autocomplete="off">
+      </div>
+      <div class="qty-group input-group">
+        <label>Cant.</label>
+        <input type="number" id="product-qty" value="1" min="1" max="99">
+      </div>
+      <button class="btn-add" onclick="addProduct()">+</button>
+    </div>
+    <div class="product-hint" id="product-hint">Escribe el código para buscar el producto</div>
+    <button class="btn-qr" onclick="openQR()">
+      <span>📷</span> Escanear código QR
+    </button>
+  </div>
+
+  <!-- CARRITO -->
+  <div class="section-title">Carrito</div>
+  <div class="card">
+    <div id="cart-list">
+      <div class="cart-empty"><span>🛍️</span>Aún no hay productos agregados</div>
+    </div>
+    <div id="cart-total-area" style="display:none">
+      <div class="total-row">
+        <span class="total-label">Total</span>
+        <span class="total-amount" id="total-amount">$0</span>
+      </div>
+      <div class="total-items" id="total-items"></div>
+    </div>
+  </div>
+
+  <!-- PAGO -->
+  <div class="section-title">Método de pago</div>
+  <div class="card">
+    <div class="payment-grid">
+      <div class="payment-option" onclick="selectPayment(this,'Efectivo')">
+        <span class="pay-icon">💵</span>Efectivo
+      </div>
+      <div class="payment-option" onclick="selectPayment(this,'Transferencia')">
+        <span class="pay-icon">🏦</span>Transferencia
+      </div>
+      <div class="payment-option" onclick="selectPayment(this,'Tarjeta')">
+        <span class="pay-icon">💳</span>Tarjeta
+      </div>
+      <div class="payment-option" onclick="selectPayment(this,'Nequi/Daviplata')">
+        <span class="pay-icon">📱</span>Nequi/Daviplata
+      </div>
+      <div class="payment-option" onclick="selectPayment(this,'Llave')">
+        <span class="pay-icon">🔑</span>Llave
+      </div>
+    </div>
+  </div>
+
+  <button class="btn-confirm" id="btn-confirm" onclick="confirmSale()" disabled>
+    Registrar Venta
+  </button>
+
+  <div class="deco-line"></div>
+
+  <!-- CATÁLOGO DE PRODUCTOS (demo editable) -->
+  <div class="section-title">Catálogo cargado</div>
+  <div class="card">
+    <div id="catalog-display"></div>
+    <p class="catalog-note">
+      🔧 El catálogo se carga desde tu Excel.<br>
+      <a href="#" onclick="showCatalogHelp(); return false;">¿Cómo actualizar el catálogo?</a>
+    </p>
+  </div>
+
+</div>
+
+<!-- SUCCESS VIEW -->
+<div class="container success-screen" id="success-view">
+  <div class="success-icon">✨</div>
+  <div class="success-title">¡Venta registrada!</div>
+  <div class="success-subtitle" id="success-msg"></div>
+  <div id="send-status" style="font-size:13px; margin-bottom:16px; min-height:20px;"></div>
+
+  <div class="export-box">
+    <div class="export-title">📋 Datos para Excel (copiar)</div>
+    <div class="export-data" id="export-data"></div>
+  </div>
+
+  <button class="btn-copy" onclick="copyData()">📋 Copiar datos para Excel</button>
+  <button class="btn-new-sale" onclick="newSale()">+ Nueva venta</button>
+</div>
+
+<!-- QR MODAL -->
+<div class="modal-overlay" id="qr-modal">
+  <div class="modal">
+    <h3>Escanear QR</h3>
+    <p>Apunta la cámara al código QR del producto</p>
+    <div id="qr-reader"></div>
+    <button class="btn-close-modal" onclick="closeQR()">Cancelar</button>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
+<script>
+// ============================================================
+// CONFIGURACIÓN POWER AUTOMATE
+// Pega aquí la URL de tu flujo de Power Automate
+// ============================================================
+const POWER_AUTOMATE_URL = "https://script.google.com/macros/s/AKfycbyThKfELFW6wpvip4LbZmiAx9sil-U4Onwi1rSLDDkfAAeblugGjHwQXLahgsNreZVzzg/exec";
+
+// ============================================================
+// CATÁLOGO DE PRODUCTOS
+// Para actualizar: cambia los datos aquí o carga desde Excel
+// Formato: { "CÓDIGO": { name: "Nombre", price: 0 } }
+// ============================================================
+let CATALOG = {
+  "1001": { name: "Aretes argolla dorada", price: 25000 },
+  "1002": { name: "Collar cadena fina", price: 35000 },
+  "1003": { name: "Pulsera eslabón", price: 28000 },
+  "1004": { name: "Anillo ajustable", price: 18000 },
+  "1005": { name: "Aretes perla blanca", price: 22000 },
+  "1006": { name: "Tobillera dorada", price: 20000 },
+  "1007": { name: "Set collar + aretes", price: 55000 },
+  "1008": { name: "Pulsera charm", price: 32000 },
+};
+
+// Estado
+let cart = [];
+let selectedPayment = '';
+let qrScanner = null;
+
+// ============================================================
+// BUSCAR PRODUCTO POR CÓDIGO
+// ============================================================
+const codeInput = document.getElementById('product-code');
+const hint = document.getElementById('product-hint');
+
+codeInput.addEventListener('input', () => {
+  const code = codeInput.value.trim();
+  if (code.length === 4) {
+    const product = CATALOG[code];
+    if (product) {
+      hint.textContent = `✓ ${product.name} — ${formatPrice(product.price)}`;
+      hint.className = 'product-hint found';
+    } else {
+      hint.textContent = `✗ Código no encontrado en catálogo`;
+      hint.className = 'product-hint not-found';
+    }
+  } else if (code.length > 0) {
+    hint.textContent = `Código de ${code.length}/4 dígitos...`;
+    hint.className = 'product-hint';
+  } else {
+    hint.textContent = 'Escribe el código para buscar el producto';
+    hint.className = 'product-hint';
+  }
+});
+
+codeInput.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') addProduct();
+});
+
+// ============================================================
+// AGREGAR AL CARRITO
+// ============================================================
+function addProduct() {
+  const code = codeInput.value.trim();
+  const qty = parseInt(document.getElementById('product-qty').value) || 1;
+
+  if (code.length !== 4) { showToast('Ingresa un código de 4 dígitos'); return; }
+
+  const product = CATALOG[code];
+  if (!product) { showToast('Código no encontrado'); return; }
+
+  // Si ya está en carrito, actualizar cantidad
+  const existing = cart.find(i => i.code === code);
+  if (existing) {
+    existing.qty += qty;
+    existing.subtotal = existing.price * existing.qty;
+    showToast(`Cantidad actualizada: ${existing.qty}`);
+  } else {
+    cart.push({
+      code,
+      name: product.name,
+      price: product.price,
+      qty,
+      subtotal: product.price * qty
+    });
+    showToast(`${product.name} agregado`);
+  }
+
+  codeInput.value = '';
+  hint.textContent = 'Escribe el código para buscar el producto';
+  hint.className = 'product-hint';
+  document.getElementById('product-qty').value = 1;
+
+  renderCart();
+  validateForm();
+  codeInput.focus();
+}
+
+// ============================================================
+// RENDER CARRITO
+// ============================================================
+function renderCart() {
+  const list = document.getElementById('cart-list');
+  const totalArea = document.getElementById('cart-total-area');
+
+  if (cart.length === 0) {
+    list.innerHTML = '<div class="cart-empty"><span>🛍️</span>Aún no hay productos agregados</div>';
+    totalArea.style.display = 'none';
+    return;
+  }
+
+  list.innerHTML = cart.map((item, idx) => `
+    <div class="cart-item">
+      <div class="cart-item-code">${item.code}</div>
+      <div class="cart-item-info">
+        <div class="cart-item-name">${item.name}</div>
+        <div class="cart-item-detail">${formatPrice(item.price)} × ${item.qty}</div>
+      </div>
+      <div class="cart-item-price">${formatPrice(item.subtotal)}</div>
+      <button class="btn-remove" onclick="removeItem(${idx})">×</button>
+    </div>
+  `).join('');
+
+  const total = cart.reduce((sum, i) => sum + i.subtotal, 0);
+  const totalQty = cart.reduce((sum, i) => sum + i.qty, 0);
+
+  document.getElementById('total-amount').textContent = formatPrice(total);
+  document.getElementById('total-items').textContent = `${cart.length} referencia${cart.length > 1 ? 's' : ''} · ${totalQty} producto${totalQty > 1 ? 's' : ''}`;
+  totalArea.style.display = 'block';
+}
+
+function removeItem(idx) {
+  const name = cart[idx].name;
+  cart.splice(idx, 1);
+  renderCart();
+  validateForm();
+  showToast(`${name} eliminado`);
+}
+
+// ============================================================
+// PAGO
+// ============================================================
+function selectPayment(el, method) {
+  document.querySelectorAll('.payment-option').forEach(e => e.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedPayment = method;
+  validateForm();
+}
+
+// ============================================================
+// VALIDAR FORMULARIO
+// ============================================================
+function validateForm() {
+  const btn = document.getElementById('btn-confirm');
+  const hasClient = document.getElementById('client-name').value.trim().length > 0;
+  const hasVendedor = document.getElementById('vendedor').value.trim() !== '';
+  const hasCart = cart.length > 0;
+  const hasPayment = selectedPayment !== '';
+  btn.disabled = !(hasClient && hasVendedor && hasCart && hasPayment);
+}
+
+document.getElementById('client-name').addEventListener('input', validateForm);
+document.getElementById('vendedor').addEventListener('input', validateForm);
+
+// ============================================================
+// CONFIRMAR VENTA
+// ============================================================
+async function confirmSale() {
+  const clientName = document.getElementById('client-name').value.trim();
+  const vendedor = document.getElementById('vendedor').value;
+  const now = new Date();
+  const fecha = now.toLocaleDateString('es-CO', { day: '2-digit', month: '2-digit', year: 'numeric' });
+  const hora = now.toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' });
+  const total = cart.reduce((sum, i) => sum + i.subtotal, 0);
+
+  // Datos para copiar al Excel (respaldo manual)
+  let exportRows = cart.map(item =>
+    `${fecha}\t${clientName}\t${item.code}\t${item.name}\t${item.qty}\t${item.price}\t${item.subtotal}\t${selectedPayment}\t${vendedor}`
+  ).join('\n');
+
+  let exportText = cart.map(item =>
+    `${fecha} | ${clientName} | ${item.code} | ${item.name} | Cant: ${item.qty} | ${formatPrice(item.price)} | Sub: ${formatPrice(item.subtotal)} | ${selectedPayment} | ${vendedor}`
+  ).join('\n');
+
+  window._lastExportRows = exportRows;
+
+  // Mostrar pantalla de éxito inmediatamente
+  document.getElementById('main-view').style.display = 'none';
+  const successView = document.getElementById('success-view');
+  successView.classList.add('visible');
+  document.getElementById('success-msg').innerHTML =
+    `<strong>${clientName}</strong><br>${cart.length} referencia${cart.length>1?'s':''} · ${formatPrice(total)}<br><span style="color:var(--gold)">${selectedPayment}</span> · ${vendedor} · ${fecha} ${hora}`;
+  document.getElementById('export-data').textContent = exportText;
+
+  // Enviar a Google Apps Script (una fila por producto)
+  if (POWER_AUTOMATE_URL && POWER_AUTOMATE_URL !== "PEGA_AQUI_TU_URL_DE_POWER_AUTOMATE") {
+    const sendStatus = document.getElementById('send-status');
+    sendStatus.textContent = '⏳ Enviando a Google Sheets...';
+    sendStatus.style.color = 'var(--text-muted)';
+
+    try {
+      const promises = cart.map(item =>
+        fetch(POWER_AUTOMATE_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            Fecha: fecha,
+            NombreCliente: clientName,
+            CodigoProducto: item.code,
+            DescripcionProducto: item.name,
+            Cantidad: item.qty,
+            PrecioUnitario: item.price,
+            Subtotal: item.subtotal,
+            MetodoPago: selectedPayment,
+            Vendedor: vendedor
+          })
+        })
+      );
+      await Promise.all(promises);
+      sendStatus.textContent = '✅ ¡Registrado en Google Sheets automáticamente!';
+      sendStatus.style.color = 'var(--success)';
+    } catch (err) {
+      sendStatus.textContent = '⚠️ Error de conexión — usa el botón copiar como respaldo';
+      sendStatus.style.color = 'var(--danger)';
+    }
+  } else {
+    document.getElementById('send-status').textContent = '⚙️ Configura la URL para envío automático';
+    document.getElementById('send-status').style.color = 'var(--text-muted)';
+  }
+}
+
+// ============================================================
+// COPIAR DATOS
+// ============================================================
+function copyData() {
+  navigator.clipboard.writeText(window._lastExportRows).then(() => {
+    showToast('¡Copiado! Pega en tu Excel con Ctrl+V');
+  }).catch(() => {
+    // Fallback
+    const ta = document.createElement('textarea');
+    ta.value = window._lastExportRows;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    showToast('¡Copiado! Pega en tu Excel con Ctrl+V');
+  });
+}
+
+// ============================================================
+// NUEVA VENTA
+// ============================================================
+function newSale() {
+  cart = [];
+  selectedPayment = '';
+  document.getElementById('client-name').value = '';
+  document.getElementById('vendedor').value = '';
+  document.getElementById('product-code').value = '';
+  document.getElementById('product-qty').value = 1;
+  hint.textContent = 'Escribe el código para buscar el producto';
+  hint.className = 'product-hint';
+  document.querySelectorAll('.payment-option').forEach(e => e.classList.remove('selected'));
+  renderCart();
+  validateForm();
+
+  document.getElementById('success-view').classList.remove('visible');
+  document.getElementById('main-view').style.display = 'block';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ============================================================
+// QR SCANNER
+// ============================================================
+function openQR() {
+  document.getElementById('qr-modal').classList.add('visible');
+  qrScanner = new Html5Qrcode("qr-reader");
+  qrScanner.start(
+    { facingMode: "environment" },
+    { fps: 10, qrbox: { width: 220, height: 220 } },
+    (decodedText) => {
+      // Extraer código de 4 dígitos del QR
+      const match = decodedText.match(/\d{4}/);
+      if (match) {
+        codeInput.value = match[0];
+        codeInput.dispatchEvent(new Event('input'));
+        closeQR();
+        showToast('QR leído: ' + match[0]);
+      }
+    },
+    () => {}
+  ).catch(() => showToast('No se pudo acceder a la cámara'));
+}
+
+function closeQR() {
+  document.getElementById('qr-modal').classList.remove('visible');
+  if (qrScanner) {
+    qrScanner.stop().catch(() => {});
+    qrScanner = null;
+  }
+}
+
+// ============================================================
+// CATÁLOGO DISPLAY
+// ============================================================
+function renderCatalog() {
+  const el = document.getElementById('catalog-display');
+  const items = Object.entries(CATALOG);
+  el.innerHTML = `
+    <div style="font-size:12px; color:var(--text-muted); margin-bottom:8px">
+      ${items.length} productos cargados
+    </div>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px">
+      ${items.slice(0,6).map(([code, p]) => `
+        <div style="background:var(--beige); border-radius:6px; padding:8px 10px; font-size:11px;">
+          <span style="color:var(--gold); font-weight:500">${code}</span><br>
+          <span style="color:var(--black-soft)">${p.name}</span><br>
+          <span style="color:var(--text-muted)">${formatPrice(p.price)}</span>
+        </div>
+      `).join('')}
+      ${items.length > 6 ? `<div style="background:var(--beige); border-radius:6px; padding:8px 10px; font-size:12px; color:var(--text-muted); display:flex; align-items:center; justify-content:center;">+${items.length - 6} más</div>` : ''}
+    </div>
+  `;
+}
+
+function showCatalogHelp() {
+  showToast('Edita el objeto CATALOG en el código HTML de la app');
+}
+
+// ============================================================
+// UTILIDADES
+// ============================================================
+function formatPrice(n) {
+  return '$' + n.toLocaleString('es-CO');
+}
+
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('visible');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('visible'), 2500);
+}
+
+// INIT
+renderCatalog();
+</script>
+</body>
+</html>
