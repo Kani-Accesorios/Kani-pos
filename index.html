@@ -588,7 +588,7 @@
   <div class="card">
     <div class="product-search-row">
       <div class="input-group">
-        <label>Código (4 dígitos)</label>
+        <label>Código (3-4 dígitos)</label>
         <input type="text" id="product-code" placeholder="0000" maxlength="4" inputmode="numeric" autocomplete="off">
       </div>
       <div class="qty-group input-group">
@@ -640,6 +640,10 @@
       <div class="payment-option" onclick="selectPayment(this,'Crédito')">
         <span class="pay-icon">📋</span>Crédito
       </div>
+    </div>
+    <div class="input-group" style="margin-top:12px; margin-bottom:0">
+      <label>N° referencia comprobante <span style="color:var(--beige-deeper)">(opcional)</span></label>
+      <input type="text" id="referencia" placeholder="Ej: 1234567890 — dejar vacío si es efectivo" autocomplete="off">
     </div>
   </div>
 
@@ -1221,7 +1225,7 @@ const hint = document.getElementById('product-hint');
 
 codeInput.addEventListener('input', () => {
   const code = codeInput.value.trim();
-  if (code.length === 4) {
+  if (code.length >= 3) {
     const product = CATALOG[code];
     if (product) {
       hint.textContent = `✓ ${product.name} — ${formatPrice(product.price)}`;
@@ -1231,7 +1235,7 @@ codeInput.addEventListener('input', () => {
       hint.className = 'product-hint not-found';
     }
   } else if (code.length > 0) {
-    hint.textContent = `Código de ${code.length}/4 dígitos...`;
+    hint.textContent = `Código de ${code.length}/3 dígitos mínimo...`;
     hint.className = 'product-hint';
   } else {
     hint.textContent = 'Escribe el código para buscar el producto';
@@ -1250,7 +1254,7 @@ function addProduct() {
   const code = codeInput.value.trim();
   const qty = parseInt(document.getElementById('product-qty').value) || 1;
 
-  if (code.length !== 4) { showToast('Ingresa un código de 4 dígitos'); return; }
+  if (code.length < 3) { showToast('Ingresa mínimo 3 dígitos'); return; }
 
   const product = CATALOG[code];
   if (!product) { showToast('Código no encontrado'); return; }
@@ -1353,19 +1357,19 @@ document.getElementById('vendedor').addEventListener('input', validateForm);
 // ============================================================
 async function confirmSale() {
   const clientName = document.getElementById('client-name').value.trim();
-  const vendedor = document.getElementById('vendedor').value;
+  const vendedor = document.getElementById('vendedor').value.trim();
+  const referencia = document.getElementById('referencia').value.trim() || '—';
   const now = new Date();
   const fecha = now.toLocaleDateString('es-CO', { day: '2-digit', month: '2-digit', year: 'numeric' });
   const hora = now.toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' });
   const total = cart.reduce((sum, i) => sum + i.subtotal, 0);
 
-  // Datos para copiar al Excel (respaldo manual)
   let exportRows = cart.map(item =>
-    `${fecha}\t${clientName}\t${item.code}\t${item.name}\t${item.qty}\t${item.price}\t${item.subtotal}\t${selectedPayment}\t${vendedor}`
+    `${fecha}\t${clientName}\t${item.code}\t${item.name}\t${item.qty}\t${item.price}\t${item.subtotal}\t${selectedPayment}\t${vendedor}\t${referencia}`
   ).join('\n');
 
   let exportText = cart.map(item =>
-    `${fecha} | ${clientName} | ${item.code} | ${item.name} | Cant: ${item.qty} | ${formatPrice(item.price)} | Sub: ${formatPrice(item.subtotal)} | ${selectedPayment} | ${vendedor}`
+    `${fecha} | ${clientName} | ${item.code} | ${item.name} | Cant: ${item.qty} | ${formatPrice(item.price)} | Sub: ${formatPrice(item.subtotal)} | ${selectedPayment} | ${vendedor} | Ref: ${referencia}`
   ).join('\n');
 
   window._lastExportRows = exportRows;
@@ -1399,7 +1403,8 @@ async function confirmSale() {
             PrecioUnitario: item.price,
             Subtotal: item.subtotal,
             MetodoPago: selectedPayment,
-            Vendedor: vendedor
+            Vendedor: vendedor,
+            Referencia: referencia
           })
         })
       );
@@ -1442,6 +1447,7 @@ function newSale() {
   selectedPayment = '';
   document.getElementById('client-name').value = '';
   document.getElementById('vendedor').value = '';
+  document.getElementById('referencia').value = '';
   document.getElementById('product-code').value = '';
   document.getElementById('product-qty').value = 1;
   hint.textContent = 'Escribe el código para buscar el producto';
