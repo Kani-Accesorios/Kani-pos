@@ -20,9 +20,9 @@
     --danger: #b05a4a;
     --success: #4a7c5a;
   }
-
+ 
   * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-
+ 
   body {
     background: var(--beige);
     font-family: 'Jost', sans-serif;
@@ -30,7 +30,7 @@
     min-height: 100vh;
     overflow-x: hidden;
   }
-
+ 
   /* HEADER */
   header {
     background: var(--black);
@@ -44,12 +44,12 @@
     z-index: 100;
     box-shadow: 0 2px 20px rgba(0,0,0,0.3);
   }
-
+ 
   .logo-text {
     text-align: center;
     line-height: 1;
   }
-
+ 
   .logo-kani {
     font-family: 'Cormorant Garamond', serif;
     font-size: 28px;
@@ -62,7 +62,7 @@
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
-
+ 
   .logo-accesorios {
     font-family: 'Jost', sans-serif;
     font-size: 9px;
@@ -74,7 +74,7 @@
     margin-top: 2px;
     opacity: 0.85;
   }
-
+ 
   .header-badge {
     background: var(--gold);
     color: var(--black);
@@ -87,14 +87,14 @@
     right: 16px;
     text-transform: uppercase;
   }
-
+ 
   /* MAIN CONTAINER */
   .container {
     max-width: 480px;
     margin: 0 auto;
     padding: 0 16px 100px;
   }
-
+ 
   /* SECTION TITLES */
   .section-title {
     font-family: 'Cormorant Garamond', serif;
@@ -115,7 +115,7 @@
     background: linear-gradient(to right, var(--gold), transparent);
     opacity: 0.4;
   }
-
+ 
   /* CARDS */
   .card {
     background: var(--white);
@@ -124,7 +124,7 @@
     border: 1px solid var(--beige-deeper);
     box-shadow: 0 2px 12px rgba(0,0,0,0.05);
   }
-
+ 
   /* INPUTS */
   .input-group {
     margin-bottom: 12px;
@@ -157,7 +157,7 @@
     background: var(--white);
   }
   input::placeholder { color: var(--beige-deeper); }
-
+ 
   /* PRODUCT SEARCH ROW */
   .product-search-row {
     display: flex;
@@ -166,13 +166,13 @@
   }
   .product-search-row .input-group { flex: 1; margin-bottom: 0; }
   .product-search-row input { font-size: 18px; letter-spacing: 0.05em; }
-
+ 
   .qty-group {
     width: 70px;
     flex-shrink: 0;
   }
   .qty-group input { text-align: center; font-size: 16px; }
-
+ 
   .btn-add {
     width: 48px;
     height: 48px;
@@ -191,7 +191,7 @@
     align-self: flex-end;
   }
   .btn-add:active { transform: scale(0.93); background: var(--gold-light); }
-
+ 
   /* QR BUTTON */
   .btn-qr {
     width: 100%;
@@ -212,7 +212,7 @@
     transition: background 0.2s;
   }
   .btn-qr:active { background: rgba(201,168,76,0.08); }
-
+ 
   /* PRODUCT HINT */
   .product-hint {
     font-size: 12px;
@@ -224,7 +224,7 @@
   }
   .product-hint.found { color: var(--success); font-style: normal; font-weight: 500; }
   .product-hint.not-found { color: var(--danger); font-style: normal; }
-
+ 
   /* CART */
   .cart-empty {
     text-align: center;
@@ -234,7 +234,7 @@
     letter-spacing: 0.05em;
   }
   .cart-empty span { font-size: 32px; display: block; margin-bottom: 8px; }
-
+ 
   .cart-item {
     display: flex;
     align-items: center;
@@ -244,12 +244,12 @@
     animation: slideIn 0.25s ease;
   }
   .cart-item:last-child { border-bottom: none; }
-
+ 
   @keyframes slideIn {
     from { opacity: 0; transform: translateY(-8px); }
     to { opacity: 1; transform: translateY(0); }
   }
-
+ 
   .cart-item-code {
     background: var(--black);
     color: var(--gold);
@@ -262,7 +262,7 @@
     min-width: 48px;
     text-align: center;
   }
-
+ 
   .cart-item-info { flex: 1; min-width: 0; }
   .cart-item-name {
     font-size: 14px;
@@ -277,7 +277,7 @@
     color: var(--text-muted);
     margin-top: 1px;
   }
-
+ 
   .cart-item-price {
     font-family: 'Cormorant Garamond', serif;
     font-size: 16px;
@@ -285,7 +285,7 @@
     color: var(--black);
     flex-shrink: 0;
   }
-
+ 
   .btn-remove {
     background: none;
     border: none;
@@ -298,7 +298,7 @@
     flex-shrink: 0;
   }
   .btn-remove:active { color: var(--danger); }
-
+ 
   /* TOTAL */
   .total-row {
     display: flex;
@@ -329,7 +329,7 @@
     text-align: right;
     margin-top: 2px;
   }
-
+ 
   /* PAYMENT */
   .payment-grid {
     display: grid;
@@ -358,7 +358,7 @@
     font-weight: 500;
   }
   .payment-option .pay-icon { font-size: 18px; display: block; margin-bottom: 4px; }
-
+ 
   /* CONFIRM BUTTON */
   .btn-confirm {
     width: 100%;
@@ -386,7 +386,7 @@
   }
   .btn-confirm:active { transform: scale(0.98); }
   .btn-confirm:disabled { opacity: 0.4; cursor: not-allowed; }
-
+ 
   /* SUCCESS SCREEN */
   .success-screen {
     display: none;
@@ -396,7 +396,7 @@
   }
   .success-screen.visible { display: block; }
   @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
-
+ 
   .success-icon {
     width: 72px;
     height: 72px;
@@ -417,7 +417,7 @@
     letter-spacing: 0.05em;
   }
   .success-subtitle { font-size: 14px; color: var(--text-muted); margin-bottom: 28px; line-height: 1.6; }
-
+ 
   .export-box {
     background: var(--white);
     border: 1px solid var(--beige-deeper);
@@ -442,7 +442,7 @@
     white-space: pre-wrap;
     word-break: break-all;
   }
-
+ 
   .btn-copy {
     width: 100%;
     padding: 13px;
@@ -459,7 +459,7 @@
     transition: transform 0.15s;
   }
   .btn-copy:active { transform: scale(0.97); }
-
+ 
   .btn-new-sale {
     width: 100%;
     padding: 13px;
@@ -475,7 +475,7 @@
     transition: border-color 0.15s;
   }
   .btn-new-sale:active { border-color: var(--gold); }
-
+ 
   /* QR MODAL */
   .modal-overlay {
     display: none;
@@ -515,7 +515,7 @@
     font-size: 14px;
     cursor: pointer;
   }
-
+ 
   /* TOAST */
   .toast {
     position: fixed;
@@ -533,7 +533,7 @@
     white-space: nowrap;
   }
   .toast.visible { transform: translateX(-50%) translateY(0); }
-
+ 
   /* DECORATIVE LINE */
   .deco-line {
     height: 1px;
@@ -541,7 +541,7 @@
     opacity: 0.3;
     margin: 20px 0;
   }
-
+ 
   /* CATALOG HINT */
   .catalog-note {
     font-size: 11px;
@@ -559,7 +559,7 @@
 </style>
 </head>
 <body>
-
+ 
 <header>
   <div class="logo-text">
     <span class="logo-kani">Kani</span>
@@ -567,9 +567,9 @@
   </div>
   <div class="header-badge">POS</div>
 </header>
-
+ 
 <div class="container" id="main-view">
-
+ 
   <!-- CLIENTE -->
   <div class="section-title">Cliente & Vendedora</div>
   <div class="card">
@@ -582,7 +582,7 @@
       <input type="text" id="vendedor" placeholder="Ej: Katherine, Daniela..." autocomplete="off">
     </div>
   </div>
-
+ 
   <!-- AGREGAR PRODUCTO -->
   <div class="section-title">Agregar producto</div>
   <div class="card">
@@ -602,7 +602,7 @@
       <span>📷</span> Escanear código QR
     </button>
   </div>
-
+ 
   <!-- CARRITO -->
   <div class="section-title">Carrito</div>
   <div class="card">
@@ -617,7 +617,7 @@
       <div class="total-items" id="total-items"></div>
     </div>
   </div>
-
+ 
   <!-- PAGO -->
   <div class="section-title">Método de pago</div>
   <div class="card">
@@ -628,8 +628,8 @@
       <div class="payment-option" onclick="selectPayment(this,'Transferencia')">
         <span class="pay-icon">🏦</span>Transferencia
       </div>
-      <div class="payment-option" onclick="selectPayment(this,'Tarjeta')">
-        <span class="pay-icon">💳</span>Tarjeta
+      <div class="payment-option" onclick="selectPayment(this,'Datáfono')">
+        <span class="pay-icon">💳</span>Datáfono
       </div>
       <div class="payment-option" onclick="selectPayment(this,'Nequi/Daviplata')">
         <span class="pay-icon">📱</span>Nequi/Daviplata
@@ -646,13 +646,13 @@
       <input type="text" id="referencia" placeholder="Ej: 1234567890 — dejar vacío si es efectivo" autocomplete="off">
     </div>
   </div>
-
+ 
   <button class="btn-confirm" id="btn-confirm" onclick="confirmSale()" disabled>
     Registrar Venta
   </button>
-
+ 
   <div class="deco-line"></div>
-
+ 
   <!-- CATÁLOGO DE PRODUCTOS (demo editable) -->
   <div class="section-title">Catálogo cargado</div>
   <div class="card">
@@ -662,25 +662,25 @@
       <a href="#" onclick="showCatalogHelp(); return false;">¿Cómo actualizar el catálogo?</a>
     </p>
   </div>
-
+ 
 </div>
-
+ 
 <!-- SUCCESS VIEW -->
 <div class="container success-screen" id="success-view">
   <div class="success-icon">✨</div>
   <div class="success-title">¡Venta registrada!</div>
   <div class="success-subtitle" id="success-msg"></div>
   <div id="send-status" style="font-size:13px; margin-bottom:16px; min-height:20px;"></div>
-
+ 
   <div class="export-box">
     <div class="export-title">📋 Datos para Excel (copiar)</div>
     <div class="export-data" id="export-data"></div>
   </div>
-
+ 
   <button class="btn-copy" onclick="copyData()">📋 Copiar datos para Excel</button>
   <button class="btn-new-sale" onclick="newSale()">+ Nueva venta</button>
 </div>
-
+ 
 <!-- QR MODAL -->
 <div class="modal-overlay" id="qr-modal">
   <div class="modal">
@@ -690,10 +690,10 @@
     <button class="btn-close-modal" onclick="closeQR()">Cancelar</button>
   </div>
 </div>
-
+ 
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
-
+ 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
 <script>
 // ============================================================
@@ -701,7 +701,7 @@
 // Pega aquí la URL de tu flujo de Power Automate
 // ============================================================
 const POWER_AUTOMATE_URL = "https://script.google.com/macros/s/AKfycbyThKfELFW6wpvip4LbZmiAx9sil-U4Onwi1rSLDDkfAAeblugGjHwQXLahgsNreZVzzg/exec";
-
+ 
 // ============================================================
 // CATÁLOGO DE PRODUCTOS
 // Para actualizar: cambia los datos aquí o carga desde Excel
@@ -1258,19 +1258,67 @@ let CATALOG = {
   "2748": { name: "Mochila flores pequeña", price: 130000 },
   "2749": { name: "Mochila flores grande", price: 180000 },
   "2750": { name: "Mochila aros", price: 150000 },
+  "2751": { name: "Topo circón rojo (ex Set)", price: 20000 },
+  "2752": { name: "Pulso aro rigida cruzada Punta cuadrada", price: 35000 },
+  "2753": { name: "Pulso rigida Nudo doble en la mitad", price: 30000 },
+  "2754": { name: "Pulso Aro rigido liso medium", price: 40000 },
+  "2755": { name: "Pulso aro rigido cruzada Punta diagonal", price: 35000 },
+  "2756": { name: "Pulso Aro rigido liso maxi", price: 45000 },
+  "2757": { name: "Pulso Aro rigido onda delgada entorche", price: 35000 },
+  "2758": { name: "Pulso aro rigida cruzada Multicircones colores", price: 60000 },
+  "2759": { name: "Pulso aro rigido Vancleef negro y brillos", price: 45000 },
+  "2760": { name: "Pulso entorchado punta corazones brillos", price: 35000 },
+  "2761": { name: "Pulso Aro ovalado rigido liso delgado", price: 30000 },
+  "2762": { name: "Pulso rigido Nudo en la mitad", price: 28000 },
+  "2763": { name: "Pulso rigido triple corrugado", price: 45000 },
+  "2764": { name: "Pulso entorchado punta cilindro brillos", price: 35000 },
+  "2765": { name: "Pulso Aro rigido onda delgada", price: 35000 },
+  "2766": { name: "Pulsera Tenis Blanca Broche circular", price: 43800 },
+  "2767": { name: "Pulsera Tenis Blanca Broche ovalado", price: 160000 },
+  "2768": { name: "Pulsera Aro Flexible elastica", price: 35000 },
+  "2769": { name: "Argolla Lisa banana", price: 28000 },
+  "2770": { name: "Argolla Lisa cuadrada cartera", price: 28000 },
+  "2771": { name: "Arete tres lineas circulo con piedra", price: 30000 },
+  "2772": { name: "Arete dos flores vinotinto", price: 30000 },
+  "2773": { name: "Argolla canasta lisa Katherin", price: 25000 },
+  "2774": { name: "Topo Flor puntas vinotinto", price: 25000 },
+  "2775": { name: "Pulsera Aro Flexible elastica Marrón", price: 55000 },
+  "2776": { name: "Topo Trapecio piedra central", price: 30000 },
+  "2777": { name: "Topo cuadrado Maxi", price: 35000 },
+  "2778": { name: "Topo cuadrado concavo Maxi", price: 35000 },
+  "2779": { name: "Topo frijol blanco", price: 25000 },
+  "2780": { name: "Pulsera Eslabones Vancleef", price: 30000 },
+  "2781": { name: "Cadena Cruz grande circones verdes", price: 32000 },
+  "2782": { name: "Cadena Cruz grande circones azules", price: 32000 },
+  "2783": { name: "Cadena Cruz grande circones fucsia", price: 32000 },
+  "2784": { name: "Pulso rigido hojas", price: 38000 },
+  "2785": { name: "Pulso rigido ovalos", price: 38000 },
+  "2786": { name: "Pulso rigido Multilineas lisa", price: 40000 },
+  "2787": { name: "Pulso rigido dos lineas circulos", price: 40000 },
+  "2788": { name: "Pulso rigido Multilineas linea gruesa central", price: 40000 },
+  "2789": { name: "Pulso rigido Multilineas lisas y corrugadas", price: 40000 },
+  "2790": { name: "Pulso Aro rigido liso medium ovalado", price: 40000 },
+  "2791": { name: "Pulso Aro rigido entorchado", price: 40000 },
+  "2792": { name: "Trio Pulsos rigido 3 oros entorchados", price: 75000 },
+  "2793": { name: "Trio Pulsos rigido 3 lisos delgados", price: 70000 },
+  "2794": { name: "Pulsera Gucci Mini", price: 25000 },
+  "2795": { name: "Pulsera Gucci Medium", price: 28000 },
+  "2796": { name: "Cadena MultiCharms 11:11", price: 45000 },
+  "2797": { name: "Cadena MultiCharms pasaporte", price: 45000 },
+  "2798": { name: "Cadena Perlas Corazón Kt", price: 0 },
 };
-
+ 
 // Estado
 let cart = [];
 let selectedPayment = '';
 let qrScanner = null;
-
+ 
 // ============================================================
 // BUSCAR PRODUCTO POR CÓDIGO
 // ============================================================
 const codeInput = document.getElementById('product-code');
 const hint = document.getElementById('product-hint');
-
+ 
 codeInput.addEventListener('input', () => {
   const code = codeInput.value.trim();
   if (code.length >= 3) {
@@ -1290,23 +1338,23 @@ codeInput.addEventListener('input', () => {
     hint.className = 'product-hint';
   }
 });
-
+ 
 codeInput.addEventListener('keydown', (e) => {
   if (e.key === 'Enter') addProduct();
 });
-
+ 
 // ============================================================
 // AGREGAR AL CARRITO
 // ============================================================
 function addProduct() {
   const code = codeInput.value.trim();
   const qty = parseInt(document.getElementById('product-qty').value) || 1;
-
+ 
   if (code.length < 3) { showToast('Ingresa mínimo 3 dígitos'); return; }
-
+ 
   const product = CATALOG[code];
   if (!product) { showToast('Código no encontrado'); return; }
-
+ 
   // Si ya está en carrito, actualizar cantidad
   const existing = cart.find(i => i.code === code);
   if (existing) {
@@ -1323,30 +1371,30 @@ function addProduct() {
     });
     showToast(`${product.name} agregado`);
   }
-
+ 
   codeInput.value = '';
   hint.textContent = 'Escribe el código para buscar el producto';
   hint.className = 'product-hint';
   document.getElementById('product-qty').value = 1;
-
+ 
   renderCart();
   validateForm();
   codeInput.focus();
 }
-
+ 
 // ============================================================
 // RENDER CARRITO
 // ============================================================
 function renderCart() {
   const list = document.getElementById('cart-list');
   const totalArea = document.getElementById('cart-total-area');
-
+ 
   if (cart.length === 0) {
     list.innerHTML = '<div class="cart-empty"><span>🛍️</span>Aún no hay productos agregados</div>';
     totalArea.style.display = 'none';
     return;
   }
-
+ 
   list.innerHTML = cart.map((item, idx) => `
     <div class="cart-item">
       <div class="cart-item-code">${item.code}</div>
@@ -1358,15 +1406,15 @@ function renderCart() {
       <button class="btn-remove" onclick="removeItem(${idx})">×</button>
     </div>
   `).join('');
-
+ 
   const total = cart.reduce((sum, i) => sum + i.subtotal, 0);
   const totalQty = cart.reduce((sum, i) => sum + i.qty, 0);
-
+ 
   document.getElementById('total-amount').textContent = formatPrice(total);
   document.getElementById('total-items').textContent = `${cart.length} referencia${cart.length > 1 ? 's' : ''} · ${totalQty} producto${totalQty > 1 ? 's' : ''}`;
   totalArea.style.display = 'block';
 }
-
+ 
 function removeItem(idx) {
   const name = cart[idx].name;
   cart.splice(idx, 1);
@@ -1374,7 +1422,7 @@ function removeItem(idx) {
   validateForm();
   showToast(`${name} eliminado`);
 }
-
+ 
 // ============================================================
 // PAGO
 // ============================================================
@@ -1384,7 +1432,7 @@ function selectPayment(el, method) {
   selectedPayment = method;
   validateForm();
 }
-
+ 
 // ============================================================
 // VALIDAR FORMULARIO
 // ============================================================
@@ -1396,10 +1444,10 @@ function validateForm() {
   const hasPayment = selectedPayment !== '';
   btn.disabled = !(hasClient && hasVendedor && hasCart && hasPayment);
 }
-
+ 
 document.getElementById('client-name').addEventListener('input', validateForm);
 document.getElementById('vendedor').addEventListener('input', validateForm);
-
+ 
 // ============================================================
 // CONFIRMAR VENTA
 // ============================================================
@@ -1411,17 +1459,17 @@ async function confirmSale() {
   const fecha = now.toLocaleDateString('es-CO', { day: '2-digit', month: '2-digit', year: 'numeric' });
   const hora = now.toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' });
   const total = cart.reduce((sum, i) => sum + i.subtotal, 0);
-
+ 
   let exportRows = cart.map(item =>
     `${fecha}\t${clientName}\t${item.code}\t${item.name}\t${item.qty}\t${item.price}\t${item.subtotal}\t${selectedPayment}\t${vendedor}\t${referencia}`
   ).join('\n');
-
+ 
   let exportText = cart.map(item =>
     `${fecha} | ${clientName} | ${item.code} | ${item.name} | Cant: ${item.qty} | ${formatPrice(item.price)} | Sub: ${formatPrice(item.subtotal)} | ${selectedPayment} | ${vendedor} | Ref: ${referencia}`
   ).join('\n');
-
+ 
   window._lastExportRows = exportRows;
-
+ 
   // Mostrar pantalla de éxito inmediatamente
   document.getElementById('main-view').style.display = 'none';
   const successView = document.getElementById('success-view');
@@ -1429,16 +1477,19 @@ async function confirmSale() {
   document.getElementById('success-msg').innerHTML =
     `<strong>${clientName}</strong><br>${cart.length} referencia${cart.length>1?'s':''} · ${formatPrice(total)}<br><span style="color:var(--gold)">${selectedPayment}</span> · ${vendedor} · ${fecha} ${hora}`;
   document.getElementById('export-data').textContent = exportText;
-
+ 
   // Enviar a Google Apps Script (una fila por producto)
   if (POWER_AUTOMATE_URL && POWER_AUTOMATE_URL !== "PEGA_AQUI_TU_URL_DE_POWER_AUTOMATE") {
     const sendStatus = document.getElementById('send-status');
     sendStatus.textContent = '⏳ Enviando a Google Sheets...';
     sendStatus.style.color = 'var(--text-muted)';
-
+ 
     try {
-      const promises = cart.map(item =>
-        fetch(POWER_AUTOMATE_URL, {
+      // Enviar una por una en secuencia para evitar pérdida de datos
+      for (let i = 0; i < cart.length; i++) {
+        const item = cart[i];
+        sendStatus.textContent = `⏳ Enviando producto ${i + 1} de ${cart.length}...`;
+        await fetch(POWER_AUTOMATE_URL, {
           method: 'POST',
           mode: 'no-cors',
           headers: { 'Content-Type': 'application/json' },
@@ -1454,9 +1505,10 @@ async function confirmSale() {
             Vendedor: vendedor,
             Referencia: referencia
           })
-        })
-      );
-      await Promise.all(promises);
+        });
+        // Pausa de 800ms entre cada envío para que Google Sheets procese cada fila
+        await new Promise(r => setTimeout(r, 800));
+      }
       sendStatus.textContent = '✅ ¡Registrado en Google Sheets automáticamente!';
       sendStatus.style.color = 'var(--success)';
     } catch (err) {
@@ -1468,7 +1520,7 @@ async function confirmSale() {
     document.getElementById('send-status').style.color = 'var(--text-muted)';
   }
 }
-
+ 
 // ============================================================
 // COPIAR DATOS
 // ============================================================
@@ -1486,7 +1538,7 @@ function copyData() {
     showToast('¡Copiado! Pega en tu Excel con Ctrl+V');
   });
 }
-
+ 
 // ============================================================
 // NUEVA VENTA
 // ============================================================
@@ -1503,12 +1555,12 @@ function newSale() {
   document.querySelectorAll('.payment-option').forEach(e => e.classList.remove('selected'));
   renderCart();
   validateForm();
-
+ 
   document.getElementById('success-view').classList.remove('visible');
   document.getElementById('main-view').style.display = 'block';
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
-
+ 
 // ============================================================
 // QR SCANNER
 // ============================================================
@@ -1531,7 +1583,7 @@ function openQR() {
     () => {}
   ).catch(() => showToast('No se pudo acceder a la cámara'));
 }
-
+ 
 function closeQR() {
   document.getElementById('qr-modal').classList.remove('visible');
   if (qrScanner) {
@@ -1539,7 +1591,7 @@ function closeQR() {
     qrScanner = null;
   }
 }
-
+ 
 // ============================================================
 // CATÁLOGO DISPLAY
 // ============================================================
@@ -1562,18 +1614,18 @@ function renderCatalog() {
     </div>
   `;
 }
-
+ 
 function showCatalogHelp() {
   showToast('Edita el objeto CATALOG en el código HTML de la app');
 }
-
+ 
 // ============================================================
 // UTILIDADES
 // ============================================================
 function formatPrice(n) {
   return '$' + n.toLocaleString('es-CO');
 }
-
+ 
 let toastTimer;
 function showToast(msg) {
   const t = document.getElementById('toast');
@@ -1582,7 +1634,7 @@ function showToast(msg) {
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => t.classList.remove('visible'), 2500);
 }
-
+ 
 // INIT
 renderCatalog();
 </script>
