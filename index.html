@@ -285,6 +285,50 @@
     color: var(--black);
     flex-shrink: 0;
   }
+  .cart-item {
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 12px 0;
+  }
+
+  .cart-item select,
+  .cart-item input {
+    border: 1px solid var(--beige-deeper);
+    border-radius: 4px;
+    background: var(--beige);
+    font-family: 'Jost', sans-serif;
+    font-size: 11px;
+    color: var(--black);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .cart-item select:focus,
+  .cart-item input:focus {
+    border-color: var(--gold);
+  }
+
+  .cart-item select {
+    cursor: pointer;
+  }
+
+  .discount-highlight {
+    color: var(--danger);
+    font-size: 11px;
+    font-weight: 500;
+  }
+
+  .price-strikethrough {
+    text-decoration: line-through;
+    color: var(--text-muted);
+    font-size: 11px;
+    display: block;
+  }
+
+  .price-final {
+    font-weight: 600;
+    color: var(--black);
+  }
 
   .btn-remove {
     background: none;
@@ -615,6 +659,22 @@
         <span class="total-amount" id="total-amount">$0</span>
       </div>
       <div class="total-items" id="total-items"></div>
+      <!-- CHECK-LEVEL DISCOUNT -->
+      <div id="check-discount-area" style="display:none; margin-top:12px; padding-top:12px; border-top:1px solid var(--beige-deeper);">
+        <div style="font-size:11px; color:var(--text-muted); margin-bottom:6px; letter-spacing:0.05em;">DESCUENTO AL TIQUETE</div>
+        <div style="display:flex; align-items:center; gap:6px;">
+          <select id="check-discount-type" onchange="setCheckDiscount(this.value, null)"
+                  style="flex:1; padding:6px 8px; font-size:12px; border-radius:6px; background:var(--beige); border:1px solid var(--beige-deeper); font-family:inherit;">
+            <option value="none">Sin descuento</option>
+            <option value="percentage">% Descuento</option>
+            <option value="fixed">$ Precio final</option>
+          </select>
+          <input type="number" id="check-discount-value" placeholder="Valor"
+                 style="width:90px; padding:6px 8px; font-size:12px; border-radius:6px; background:var(--beige); border:1px solid var(--beige-deeper);"
+                 oninput="setCheckDiscount(null, this.value)">
+          <span id="check-discount-preview" style="font-size:12px; color:var(--danger); min-width:60px; text-align:right;"></span>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -628,7 +688,7 @@
       <div class="payment-option" onclick="selectPayment(this,'Transferencia')">
         <span class="pay-icon">🏦</span>Transferencia
       </div>
-      <div class="payment-option" onclick="selectPayment(this,'Datáfono')">
+      <div class="payment-option" onclick="selectPayment(this,'Datafono')">
         <span class="pay-icon">💳</span>Datáfono
       </div>
       <div class="payment-option" onclick="selectPayment(this,'Nequi/Daviplata')">
@@ -700,7 +760,7 @@
 // CONFIGURACIÓN POWER AUTOMATE
 // Pega aquí la URL de tu flujo de Power Automate
 // ============================================================
-const POWER_AUTOMATE_URL = "https://script.google.com/macros/s/AKfycbyThKfELFW6wpvip4LbZmiAx9sil-U4Onwi1rSLDDkfAAeblugGjHwQXLahgsNreZVzzg/exec";
+const POWER_AUTOMATE_URL = "https://script.google.com/macros/s/AKfycbw1fkbJ6FV6whkawnbbgc41uPx8UoOANBUhZbZ-b9Fv32Dxh3kb6Sna7AEhiKObVQwOGA/exec";
 
 // ============================================================
 // CATÁLOGO DE PRODUCTOS
@@ -1193,6 +1253,7 @@ let CATALOG = {
 // Estado
 let cart = [];
 let selectedPayment = '';
+let checkDiscount = { type: 'none', value: 0, ratio: 0 };
 let qrScanner = null;
 
 // ============================================================
@@ -1237,20 +1298,28 @@ function addProduct() {
   const product = CATALOG[code];
   if (!product) { showToast('Código no encontrado'); return; }
 
-  // Si ya está en carrito, actualizar cantidad
   const existing = cart.find(i => i.code === code);
   if (existing) {
     existing.qty += qty;
     existing.subtotal = existing.price * existing.qty;
+    // Recalculate discount if any
+    if (existing.discount && existing.discount.type !== 'none') {
+      calculateItemDiscount(cart.indexOf(existing));
+    } else {
+      existing.finalPrice = existing.subtotal;
+    }
     showToast(`Cantidad actualizada: ${existing.qty}`);
   } else {
-    cart.push({
+    const newItem = {
       code,
       name: product.name,
       price: product.price,
       qty,
-      subtotal: product.price * qty
-    });
+      subtotal: product.price * qty,
+      discount: { type: 'none', value: 0, amount: 0, display: '' },
+      finalPrice: product.price * qty
+    };
+    cart.push(newItem);
     showToast(`${product.name} agregado`);
   }
 
@@ -1262,7 +1331,7 @@ function addProduct() {
   renderCart();
   validateForm();
   codeInput.focus();
-}
+};
 
 // ============================================================
 // RENDER CARRITO
@@ -1278,23 +1347,254 @@ function renderCart() {
   }
 
   list.innerHTML = cart.map((item, idx) => `
-    <div class="cart-item">
+    <div class="cart-item" style="flex-wrap:wrap; gap:6px;">
       <div class="cart-item-code">${item.code}</div>
-      <div class="cart-item-info">
+      <div class="cart-item-info" style="flex:1; min-width:120px;">
         <div class="cart-item-name">${item.name}</div>
         <div class="cart-item-detail">${formatPrice(item.price)} × ${item.qty}</div>
+        ${item.discount && item.discount.type !== 'none' ?
+          `<span style="color:var(--danger); font-size:11px;">${item.discount.display}</span>` :
+          ''}
       </div>
-      <div class="cart-item-price">${formatPrice(item.subtotal)}</div>
+
+      <!-- Discount Controls -->
+      <div style="display:flex; align-items:center; gap:4px; flex-wrap:wrap;">
+        <select onchange="setItemDiscount(${idx}, this.value, null)"
+                style="width:90px; padding:4px 6px; font-size:11px; border-radius:4px; background:var(--beige);">
+          <option value="none" ${!item.discount || item.discount.type === 'none' ? 'selected' : ''}>Sin descuento</option>
+          <option value="percentage" ${item.discount && item.discount.type === 'percentage' ? 'selected' : ''}>% Descuento</option>
+          <option value="fixed" ${item.discount && item.discount.type === 'fixed' ? 'selected' : ''}>$ Precio final</option>
+        </select>
+        <input type="number"
+               id="discount-input-${idx}"
+               value="${item.discount && item.discount.type !== 'none' ? item.discount.value : ''}"
+               placeholder="Valor"
+               style="width:60px; padding:4px 6px; font-size:12px; border-radius:4px; background:var(--beige);"
+               onchange="setItemDiscount(${idx}, null, this.value)"
+               oninput="updateItemPreview(${idx})">
+        <span style="font-size:11px; color:var(--text-muted); min-width:40px;" id="discount-preview-${idx}">
+          ${item.discount && item.discount.type !== 'none' ? formatPrice(item.discount.amount) : ''}
+        </span>
+      </div>
+
+      <div class="cart-item-price" style="font-weight:600; min-width:70px; text-align:right;">
+        ${formatPrice(item.finalPrice || item.subtotal)}
+        ${item.discount && item.discount.type !== 'none' ?
+          `<span style="display:block; font-size:10px; color:var(--danger); text-decoration:line-through;">${formatPrice(item.subtotal)}</span>` :
+          ''}
+      </div>
       <button class="btn-remove" onclick="removeItem(${idx})">×</button>
     </div>
   `).join('');
 
-  const total = cart.reduce((sum, i) => sum + i.subtotal, 0);
-  const totalQty = cart.reduce((sum, i) => sum + i.qty, 0);
+  // Update totals
+  updateTotals();
+}
 
-  document.getElementById('total-amount').textContent = formatPrice(total);
-  document.getElementById('total-items').textContent = `${cart.length} referencia${cart.length > 1 ? 's' : ''} · ${totalQty} producto${totalQty > 1 ? 's' : ''}`;
+// ============================================================
+// PER-ITEM DISCOUNT FUNCTIONS
+// ============================================================
+
+function setItemDiscount(index, type, value) {
+  const item = cart[index];
+  if (!item) return;
+
+  // Initialize discount object if needed
+  if (!item.discount) {
+    item.discount = { type: 'none', value: 0, amount: 0, display: '' };
+  }
+
+  // Update type if provided
+  if (type !== null && type !== undefined) {
+    item.discount.type = type;
+  }
+
+  // Update value if provided
+  const input = document.getElementById(`discount-input-${index}`);
+  if (value !== null && value !== undefined) {
+    const numVal = parseFloat(value);
+    if (!isNaN(numVal) && numVal >= 0) {
+      item.discount.value = numVal;
+    } else {
+      item.discount.value = 0;
+    }
+  } else if (input) {
+    const inputVal = parseFloat(input.value);
+    if (!isNaN(inputVal) && inputVal >= 0) {
+      item.discount.value = inputVal;
+    } else {
+      item.discount.value = 0;
+    }
+  }
+
+  // Calculate discount
+  calculateItemDiscount(index);
+
+  // Re-render cart
+  renderCart();
+  validateForm();
+}
+
+function calculateItemDiscount(index) {
+  const item = cart[index];
+  if (!item) return;
+
+  // Reset discount if type is 'none'
+  if (!item.discount || item.discount.type === 'none') {
+    item.discount = { type: 'none', value: 0, amount: 0, display: '' };
+    item.finalPrice = item.subtotal;
+    return;
+  }
+
+  const subtotal = item.price * item.qty;
+  let discountAmount = 0;
+  let displayText = '';
+
+  if (item.discount.type === 'percentage') {
+    const percent = Math.min(Math.max(item.discount.value, 0), 100);
+    discountAmount = (subtotal * percent) / 100;
+    displayText = `${percent}% descuento`;
+  } else if (item.discount.type === 'fixed') {
+    // "fixed" = desired final price; back-calculate the discount
+    const desiredFinal = Math.max(0, item.discount.value);
+    discountAmount = Math.max(0, subtotal - desiredFinal);
+    displayText = `Precio final: ${formatPrice(desiredFinal)}`;
+  }
+
+  // Round to nearest peso
+  discountAmount = Math.round(discountAmount);
+
+  item.discount.amount = discountAmount;
+  item.discount.display = displayText;
+  item.finalPrice = subtotal - discountAmount;
+}
+
+function updateItemPreview(index) {
+  const input = document.getElementById(`discount-input-${index}`);
+  const preview = document.getElementById(`discount-preview-${index}`);
+  if (!input || !preview) return;
+
+  const item = cart[index];
+  if (!item) return;
+
+  const val = parseFloat(input.value);
+  if (isNaN(val) || val < 0) {
+    preview.textContent = '';
+    return;
+  }
+
+  // Temporarily calculate preview
+  const subtotal = item.price * item.qty;
+  let discountAmount = 0;
+
+  if (item.discount && item.discount.type === 'percentage') {
+    discountAmount = (subtotal * Math.min(val, 100)) / 100;
+    preview.textContent = `−${formatPrice(Math.round(discountAmount))}`;
+  } else if (item.discount && item.discount.type === 'fixed') {
+    const desiredFinal = Math.max(0, val);
+    preview.textContent = `→ ${formatPrice(desiredFinal)}`;
+  } else {
+    preview.textContent = '';
+  }
+}
+
+function updateTotals() {
+  const totalArea = document.getElementById('cart-total-area');
+
+  if (cart.length === 0) {
+    totalArea.style.display = 'none';
+    return;
+  }
+
+  const subtotalTotal   = cart.reduce((sum, i) => sum + (i.price * i.qty), 0);
+  const itemDiscTotal   = cart.reduce((sum, i) => sum + (i.discount ? i.discount.amount : 0), 0);
+  const afterItemTotal  = cart.reduce((sum, i) => sum + (i.finalPrice || i.subtotal), 0);
+
+  // Recompute check discount ratio against post-item-discount total
+  calculateCheckDiscount();
+  const checkDiscAmount = Math.round(afterItemTotal * checkDiscount.ratio);
+  const finalTotal      = afterItemTotal - checkDiscAmount;
+
+  document.getElementById('total-amount').textContent = formatPrice(finalTotal);
+  document.getElementById('total-items').textContent =
+    `${cart.length} referencia${cart.length > 1 ? 's' : ''} · ${cart.reduce((s,i)=>s+i.qty,0)} producto${cart.reduce((s,i)=>s+i.qty,0) > 1 ? 's' : ''}`;
+
+  // Check discount area visibility
+  document.getElementById('check-discount-area').style.display = cart.length > 0 ? 'block' : 'none';
+
+  // Preview label for check discount
+  const preview = document.getElementById('check-discount-preview');
+  if (checkDiscount.type !== 'none' && checkDiscount.ratio > 0) {
+    preview.textContent = `→ ${formatPrice(finalTotal)}`;
+  } else {
+    preview.textContent = '';
+  }
+
+  // Breakdown
+  const hasItemDisc  = cart.some(i => i.discount && i.discount.type !== 'none');
+  const hasCheckDisc = checkDiscount.type !== 'none' && checkDiscount.ratio > 0;
+  const hasAnyDisc   = hasItemDisc || hasCheckDisc;
+
+  const oldBreakdown = document.getElementById('discount-breakdown');
+  if (oldBreakdown) oldBreakdown.remove();
+
+  if (hasAnyDisc) {
+    const breakdown = document.createElement('div');
+    breakdown.id = 'discount-breakdown';
+    breakdown.style.cssText = 'margin-top:8px; padding-top:8px; border-top:1px solid var(--beige-deeper); font-size:12px; color:var(--text-muted);';
+    breakdown.innerHTML = `
+      <div style="display:flex; justify-content:space-between;">
+        <span>Subtotal</span><span>${formatPrice(subtotalTotal)}</span>
+      </div>
+      ${hasItemDisc ? `<div style="display:flex; justify-content:space-between; color:var(--danger);">
+        <span>Desc. productos (−)</span><span>${formatPrice(itemDiscTotal)}</span>
+      </div>` : ''}
+      ${hasCheckDisc ? `<div style="display:flex; justify-content:space-between; color:var(--danger);">
+        <span>Desc. tiquete (−)</span><span>${formatPrice(checkDiscAmount)}</span>
+      </div>` : ''}
+    `;
+    document.querySelector('.total-row').after(breakdown);
+  }
+
   totalArea.style.display = 'block';
+}
+
+// ============================================================
+// CHECK-LEVEL DISCOUNT
+// ============================================================
+function setCheckDiscount(type, value) {
+  if (type !== null && type !== undefined) {
+    checkDiscount.type = type;
+  }
+  if (value !== null && value !== undefined) {
+    const v = parseFloat(value);
+    checkDiscount.value = isNaN(v) ? 0 : Math.max(0, v);
+  }
+  updateTotals();
+  validateForm();
+}
+
+function calculateCheckDiscount() {
+  const afterItemTotal = cart.reduce((sum, i) => sum + (i.finalPrice || i.subtotal), 0);
+  if (checkDiscount.type === 'none' || afterItemTotal === 0) {
+    checkDiscount.ratio = 0;
+    return;
+  }
+  if (checkDiscount.type === 'percentage') {
+    checkDiscount.ratio = Math.min(checkDiscount.value, 100) / 100;
+  } else if (checkDiscount.type === 'fixed') {
+    const desired = Math.max(0, checkDiscount.value);
+    checkDiscount.ratio = Math.max(0, 1 - desired / afterItemTotal);
+  }
+}
+
+// Combined discount ratio per item for Sheets col G
+// = 1 - (effectiveFinalPrice / originalSubtotal)
+function getItemSheetRatio(item) {
+  const subtotal       = item.price * item.qty;
+  const afterItemDisc  = item.finalPrice || subtotal;
+  const effectiveFinal = afterItemDisc * (1 - checkDiscount.ratio);
+  return subtotal > 0 ? Math.max(0, 1 - effectiveFinal / subtotal) : 0;
 }
 
 function removeItem(idx) {
@@ -1303,7 +1603,7 @@ function removeItem(idx) {
   renderCart();
   validateForm();
   showToast(`${name} eliminado`);
-}
+};
 
 // ============================================================
 // PAGO
@@ -1340,61 +1640,99 @@ async function confirmSale() {
   const now = new Date();
   const fecha = now.toLocaleDateString('es-CO', { day: '2-digit', month: '2-digit', year: 'numeric' });
   const hora = now.toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' });
-  const total = cart.reduce((sum, i) => sum + i.subtotal, 0);
 
-  let exportRows = cart.map(item =>
-    `${fecha}\t${clientName}\t${item.code}\t${item.name}\t${item.qty}\t${item.price}\t${item.subtotal}\t${selectedPayment}\t${vendedor}\t${referencia}`
-  ).join('\n');
+  // Calculate totals
+  calculateCheckDiscount();
+  const subtotalTotal  = cart.reduce((sum, i) => sum + (i.price * i.qty), 0);
+  const itemDiscTotal  = cart.reduce((sum, i) => sum + (i.discount ? i.discount.amount : 0), 0);
+  const afterItemTotal = cart.reduce((sum, i) => sum + (i.finalPrice || i.subtotal), 0);
+  const checkDiscAmt   = Math.round(afterItemTotal * checkDiscount.ratio);
+  const total          = afterItemTotal - checkDiscAmt;
+  const discountTotal  = itemDiscTotal + checkDiscAmt;
 
-  let exportText = cart.map(item =>
-    `${fecha} | ${clientName} | ${item.code} | ${item.name} | Cant: ${item.qty} | ${formatPrice(item.price)} | Sub: ${formatPrice(item.subtotal)} | ${selectedPayment} | ${vendedor} | Ref: ${referencia}`
-  ).join('\n');
+  // Build export data with per-item discounts
+  let exportRows = cart.map(item => {
+    const discountInfo = item.discount && item.discount.type !== 'none'
+      ? `${item.discount.type}:${item.discount.value} (${formatPrice(item.discount.amount)})`
+      : 'Ninguno';
+
+    return `${fecha}\t${clientName}\t${item.code}\t${item.name}\t${item.qty}\t${item.price}\t${item.subtotal}\t${discountInfo}\t${formatPrice(item.finalPrice || item.subtotal)}\t${selectedPayment}\t${vendedor}\t${referencia}`;
+  }).join('\n');
+
+  let exportText = cart.map(item => {
+    const discountInfo = item.discount && item.discount.type !== 'none'
+      ? `${item.discount.display} (-${formatPrice(item.discount.amount)})`
+      : 'Sin descuento';
+
+    return `${fecha} | ${clientName} | ${item.code} | ${item.name} | Cant: ${item.qty} | ${formatPrice(item.price)} | Sub: ${formatPrice(item.subtotal)} | ${discountInfo} | Final: ${formatPrice(item.finalPrice || item.subtotal)} | ${selectedPayment} | ${vendedor} | Ref: ${referencia}`;
+  }).join('\n');
+
+  // Add summary lines
+  exportRows += `\n\nSUBTOTAL:\t${formatPrice(subtotalTotal)}\nDESCUENTOS:\t${formatPrice(discountTotal)}\nTOTAL FINAL:\t${formatPrice(total)}`;
+  exportText += `\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nSubtotal: ${formatPrice(subtotalTotal)} | Descuentos: ${formatPrice(discountTotal)} | Total: ${formatPrice(total)}`;
 
   window._lastExportRows = exportRows;
 
-  // Mostrar pantalla de éxito inmediatamente
+  // Show success screen
   document.getElementById('main-view').style.display = 'none';
   const successView = document.getElementById('success-view');
   successView.classList.add('visible');
-  document.getElementById('success-msg').innerHTML =
-    `<strong>${clientName}</strong><br>${cart.length} referencia${cart.length>1?'s':''} · ${formatPrice(total)}<br><span style="color:var(--gold)">${selectedPayment}</span> · ${vendedor} · ${fecha} ${hora}`;
+
+  const hasDiscount = cart.some(item => item.discount && item.discount.type !== 'none');
+  const discountDisplay = hasDiscount
+    ? `Descuentos: ${formatPrice(discountTotal)}`
+    : 'Sin descuentos';
+
+  document.getElementById('success-msg').innerHTML = `
+    <strong>${clientName}</strong><br>
+    ${cart.length} referencia${cart.length>1?'s':''}<br>
+    <span style="font-size:20px; color:var(--gold);">${formatPrice(total)}</span><br>
+    <span style="color:var(--text-muted); font-size:13px;">${selectedPayment} · ${vendedor} · ${fecha} ${hora}</span><br>
+    <span style="color:var(--text-muted); font-size:12px;">${discountDisplay}</span>
+  `;
   document.getElementById('export-data').textContent = exportText;
 
-  // Enviar a Google Apps Script (una fila por producto)
+  // Send to Google Apps Script
   if (POWER_AUTOMATE_URL && POWER_AUTOMATE_URL !== "PEGA_AQUI_TU_URL_DE_POWER_AUTOMATE") {
     const sendStatus = document.getElementById('send-status');
     sendStatus.textContent = '⏳ Enviando a Google Sheets...';
     sendStatus.style.color = 'var(--text-muted)';
 
     try {
-      // Enviar una por una en secuencia para evitar pérdida de datos
       for (let i = 0; i < cart.length; i++) {
         const item = cart[i];
         sendStatus.textContent = `⏳ Enviando producto ${i + 1} de ${cart.length}...`;
+
+        // GAS redirects requests which blocks CORS response reading.
+        // We use no-cors (fire-and-forget) and rely on the copy fallback for verification.
         await fetch(POWER_AUTOMATE_URL, {
           method: 'POST',
           mode: 'no-cors',
-          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             Fecha: fecha,
+            Hora: hora,
             NombreCliente: clientName,
+            Vendedor: vendedor,
             CodigoProducto: item.code,
             DescripcionProducto: item.name,
             Cantidad: item.qty,
             PrecioUnitario: item.price,
-            Subtotal: item.subtotal,
+            DescuentoRatio: getItemSheetRatio(item),
             MetodoPago: selectedPayment,
-            Vendedor: vendedor,
-            Referencia: referencia
+            Referencia: referencia,
+            SubtotalTotal: subtotalTotal,
+            DescuentoTotal: discountTotal,
+            TotalFinal: total,
+            EstadoPago: 'Pagado'
           })
         });
-        // Pausa de 800ms entre cada envío para que Google Sheets procese cada fila
-        await new Promise(r => setTimeout(r, 800));
+
+        if (i < cart.length - 1) await new Promise(r => setTimeout(r, 300));
       }
-      sendStatus.textContent = '✅ ¡Registrado en Google Sheets automáticamente!';
+      sendStatus.textContent = '📤 Enviado a Sheets — verifica que aparezca en la hoja';
       sendStatus.style.color = 'var(--success)';
     } catch (err) {
-      sendStatus.textContent = '⚠️ Error de conexión — usa el botón copiar como respaldo';
+      sendStatus.textContent = `⚠️ No se pudo enviar: ${err.message} — usa el botón copiar`;
       sendStatus.style.color = 'var(--danger)';
     }
   } else {
@@ -1427,14 +1765,21 @@ function copyData() {
 function newSale() {
   cart = [];
   selectedPayment = '';
+  checkDiscount = { type: 'none', value: 0, ratio: 0 };
+
   document.getElementById('client-name').value = '';
   document.getElementById('vendedor').value = '';
   document.getElementById('referencia').value = '';
   document.getElementById('product-code').value = '';
   document.getElementById('product-qty').value = 1;
+  document.getElementById('check-discount-type').value = 'none';
+  document.getElementById('check-discount-value').value = '';
+  document.getElementById('check-discount-preview').textContent = '';
+
+  document.querySelectorAll('.payment-option').forEach(e => e.classList.remove('selected'));
+
   hint.textContent = 'Escribe el código para buscar el producto';
   hint.className = 'product-hint';
-  document.querySelectorAll('.payment-option').forEach(e => e.classList.remove('selected'));
   renderCart();
   validateForm();
 
@@ -1453,10 +1798,11 @@ function openQR() {
     { facingMode: "environment" },
     { fps: 10, qrbox: { width: 220, height: 220 } },
     (decodedText) => {
-      // Extraer código de 4 dígitos del QR
-      const match = decodedText.match(/\d{4}/);
+      // Extraer código numérico de 3-4 dígitos del QR
+      // Matches standalone numbers (not part of longer digit strings like URLs)
+      const match = decodedText.match(/(?<!\d)(\d{3,4})(?!\d)/);
       if (match) {
-        codeInput.value = match[0];
+        codeInput.value = match[1];
         codeInput.dispatchEvent(new Event('input'));
         closeQR();
         showToast('QR leído: ' + match[0]);
