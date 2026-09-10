@@ -614,16 +614,31 @@
 
 <div class="container" id="main-view">
 
-  <!-- CLIENTE -->
-  <div class="section-title">Cliente & Vendedora</div>
+  <!-- CLIENTE, VENDEDORA Y CAJA -->
+  <!--
+    Este bloque captura tres datos clave de la venta:
+    - Nombre de la clienta (para el registro en la hoja "Ventas")
+    - Vendedora: el nombre de quien atendió/vendió (columna I en Sheets)
+    - Caja: identifica la caja registradora o el turno en el que se
+      hizo la venta (Caja 1, Caja 2, Turno mañana, etc). Este campo
+      es NUEVO y reutiliza la antigua columna "Gastos adicionales"
+      (columna M en la hoja), que casi nunca se usaba y siempre
+      llevaba el valor 0. Ver comentarios en el script de Apps Script
+      para más detalle sobre este cambio.
+  -->
+  <div class="section-title">Cliente, Vendedora & Caja</div>
   <div class="card">
     <div class="input-group">
       <label>Nombre de la clienta</label>
       <input type="text" id="client-name" placeholder="Ej: María González" autocomplete="off">
     </div>
-    <div class="input-group" style="margin-bottom:0">
+    <div class="input-group">
       <label>Vendedora</label>
       <input type="text" id="vendedor" placeholder="Ej: Katherine, Daniela..." autocomplete="off">
+    </div>
+    <div class="input-group" style="margin-bottom:0">
+      <label>Caja <span style="color:var(--beige-deeper)">(opcional)</span></label>
+      <input type="text" id="caja" placeholder="Ej: Caja 1, Turno tarde..." autocomplete="off">
     </div>
   </div>
 
@@ -701,9 +716,9 @@
         <span class="pay-icon">📋</span>Crédito
       </div>
     </div>
-    <div class="input-group" style="margin-top:12px; margin-bottom:0">
-      <label>N° referencia comprobante <span style="color:var(--beige-deeper)">(opcional)</span></label>
-      <input type="text" id="referencia" placeholder="Ej: 1234567890 — dejar vacío si es efectivo" autocomplete="off">
+    <div class="input-group" style="margin-bottom:0">
+      <label>Comentarios <span style="color:var(--beige-deeper)">(opcional)</span></label>
+      <input type="text" id="comentarios" placeholder="Ej: Separado, cambio pendiente, regalo..." autocomplete="off">
     </div>
   </div>
 
@@ -757,10 +772,40 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
 <script>
 // ============================================================
+// CAMBIOS RECIENTES (leer si algo no cuadra con el Excel)
+// ------------------------------------------------------------
+// - Se agregó el campo "Caja" (registradora/turno) junto a
+//   Vendedora. Es opcional y se envía al backend como `Caja`.
+// - Se agregó el campo "Comentarios" (nota libre y opcional
+//   sobre la venta: separados, cambios, regalos, etc). Se
+//   envía al backend como `Comentarios`.
+// - La hoja "Ventas" ahora tiene 16 columnas, en ESTE orden
+//   exacto (igual al Excel):
+//     A Fecha            I Caja
+//     B Cliente           J Forma de pago
+//     C Código            K Estado de Pago
+//     D Descripción       L Costo
+//     E Cantidad          M Vendedor
+//     F Valor unitario    N Costo real
+//     G Descuento         O Utilidad
+//     H Valor total       P Comentarios
+// - "Caja" va en la columna que ANTES era "Vendedor" (col I) y
+//   "Vendedor" se movió a la columna que ANTES era "Gastos
+//   adicionales" (col M), que casi nunca se usaba (siempre
+//   quedaba en 0). El script de Apps Script ya no suma esa
+//   columna al costo; ahora "Costo real" (col N) es simplemente
+//   igual a "Costo" (col L).
+// - "Estado de Pago" (col K) ahora se calcula mirando si
+//   "Vendedor" (col M) está vacío, en vez de la vieja columna I.
+// - Ver el archivo kani-pos-script.gs (Apps Script) para el
+//   código completo y actualizado del backend.
+// ============================================================
+
+// ============================================================
 // CONFIGURACIÓN POWER AUTOMATE
 // Pega aquí la URL de tu flujo de Power Automate
 // ============================================================
-const POWER_AUTOMATE_URL = "https://script.google.com/macros/s/AKfycbw1fkbJ6FV6whkawnbbgc41uPx8UoOANBUhZbZ-b9Fv32Dxh3kb6Sna7AEhiKObVQwOGA/exec";
+const POWER_AUTOMATE_URL = "https://script.google.com/macros/s/AKfycbxP5a11nmocS4PKhp5P2J15ZxMRlX2EUt3RYPqRddJzK9knhxQ89s9D4ikUAUJKDOmeXQ/exec";
 
 // ============================================================
 // CATÁLOGO DE PRODUCTOS
@@ -1381,11 +1426,13 @@ let CATALOG = {
   "3013": { name: "DIje Letras clásicas", price: 18000 }
 };
 
-// Estado
-let cart = [];
-let selectedPayment = '';
-let checkDiscount = { type: 'none', value: 0, ratio: 0 };
-let qrScanner = null;
+// ============================================================
+// ESTADO DE LA APLICACIÓN
+// ============================================================
+let cart = [];                                            // Productos agregados a la venta actual
+let selectedPayment = '';                                 // Método de pago elegido (Efectivo, Llave, etc.)
+let checkDiscount = { type: 'none', value: 0, ratio: 0 };  // Descuento aplicado a TODO el tiquete (no por producto)
+let qrScanner = null;                                      // Instancia activa del lector de códigos QR
 
 // ============================================================
 // BUSCAR PRODUCTO POR CÓDIGO
@@ -1419,6 +1466,8 @@ codeInput.addEventListener('keydown', (e) => {
 
 // ============================================================
 // AGREGAR AL CARRITO
+// Busca el código en CATALOG; si ya está en el carrito solo suma
+// la cantidad, si no, crea un ítem nuevo con descuento en "none".
 // ============================================================
 function addProduct() {
   const code = codeInput.value.trim();
@@ -1719,8 +1768,11 @@ function calculateCheckDiscount() {
   }
 }
 
-// Combined discount ratio per item for Sheets col G
+// Combined discount ratio per item for Sheets col G ("Descuento")
 // = 1 - (effectiveFinalPrice / originalSubtotal)
+// Combina el descuento por producto Y el descuento del tiquete
+// en un solo número (0 a 1) que el script guarda tal cual en
+// la hoja; la fórmula de "Valor total" (col H) lo usa directamente.
 function getItemSheetRatio(item) {
   const subtotal       = item.price * item.qty;
   const afterItemDisc  = item.finalPrice || subtotal;
@@ -1728,6 +1780,7 @@ function getItemSheetRatio(item) {
   return subtotal > 0 ? Math.max(0, 1 - effectiveFinal / subtotal) : 0;
 }
 
+// Quita un producto del carrito por su posición (índice) en el arreglo
 function removeItem(idx) {
   const name = cart[idx].name;
   cart.splice(idx, 1);
@@ -1738,6 +1791,8 @@ function removeItem(idx) {
 
 // ============================================================
 // PAGO
+// Marca visualmente el método de pago elegido y lo guarda en
+// la variable global selectedPayment para usarla al confirmar.
 // ============================================================
 function selectPayment(el, method) {
   document.querySelectorAll('.payment-option').forEach(e => e.classList.remove('selected'));
@@ -1748,6 +1803,11 @@ function selectPayment(el, method) {
 
 // ============================================================
 // VALIDAR FORMULARIO
+// Habilita el botón "Registrar Venta" solo cuando hay clienta,
+// vendedora, al menos un producto y un método de pago.
+// Nota: "Caja" es opcional a propósito y NO bloquea el envío;
+// si se quiere volver obligatorio, agregar aquí una condición
+// como: const hasCaja = document.getElementById('caja').value.trim() !== '';
 // ============================================================
 function validateForm() {
   const btn = document.getElementById('btn-confirm');
@@ -1767,7 +1827,10 @@ document.getElementById('vendedor').addEventListener('input', validateForm);
 async function confirmSale() {
   const clientName = document.getElementById('client-name').value.trim();
   const vendedor = document.getElementById('vendedor').value.trim();
-  const referencia = document.getElementById('referencia').value.trim() || '—';
+  // Caja: identifica la caja/turno de la venta. Se envía al script como
+  // "Caja" y este la guarda en la columna que antes era "Gastos adicionales".
+  const caja = document.getElementById('caja').value.trim();
+  const comentarios = document.getElementById('comentarios').value.trim();
   const now = new Date();
   const fecha = now.toLocaleDateString('es-CO', { day: '2-digit', month: '2-digit', year: 'numeric' });
   const hora = now.toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' });
@@ -1787,7 +1850,7 @@ async function confirmSale() {
       ? `${item.discount.type}:${item.discount.value} (${formatPrice(item.discount.amount)})`
       : 'Ninguno';
 
-    return `${fecha}\t${clientName}\t${item.code}\t${item.name}\t${item.qty}\t${item.price}\t${item.subtotal}\t${discountInfo}\t${formatPrice(item.finalPrice || item.subtotal)}\t${selectedPayment}\t${vendedor}\t${referencia}`;
+    return `${fecha}\t${clientName}\t${item.code}\t${item.name}\t${item.qty}\t${item.price}\t${item.subtotal}\t${discountInfo}\t${formatPrice(item.finalPrice || item.subtotal)}\t${selectedPayment}\t${vendedor}\t${caja}\t${comentarios}`;
   }).join('\n');
 
   let exportText = cart.map(item => {
@@ -1795,7 +1858,7 @@ async function confirmSale() {
       ? `${item.discount.display} (-${formatPrice(item.discount.amount)})`
       : 'Sin descuento';
 
-    return `${fecha} | ${clientName} | ${item.code} | ${item.name} | Cant: ${item.qty} | ${formatPrice(item.price)} | Sub: ${formatPrice(item.subtotal)} | ${discountInfo} | Final: ${formatPrice(item.finalPrice || item.subtotal)} | ${selectedPayment} | ${vendedor} | Ref: ${referencia}`;
+    return `${fecha} | ${clientName} | ${item.code} | ${item.name} | Cant: ${item.qty} | ${formatPrice(item.price)} | Sub: ${formatPrice(item.subtotal)} | ${discountInfo} | Final: ${formatPrice(item.finalPrice || item.subtotal)} | ${selectedPayment} | ${vendedor} | Caja: ${caja || '—'} | Comentarios: ' + comentarios : ''}`;
   }).join('\n');
 
   // Add summary lines
@@ -1844,13 +1907,14 @@ async function confirmSale() {
             Hora: hora,
             NombreCliente: clientName,
             Vendedor: vendedor,
+            Caja: caja, // se guarda en la columna que antes era "Gastos adicionales"
             CodigoProducto: item.code,
             DescripcionProducto: item.name,
             Cantidad: item.qty,
             PrecioUnitario: item.price,
             DescuentoRatio: getItemSheetRatio(item),
             MetodoPago: selectedPayment,
-            Referencia: referencia,
+            Comentarios: comentarios,
             SubtotalTotal: subtotalTotal,
             DescuentoTotal: discountTotal,
             TotalFinal: total,
@@ -1874,6 +1938,8 @@ async function confirmSale() {
 
 // ============================================================
 // COPIAR DATOS
+// Respaldo manual: copia al portapapeles las filas armadas en
+// confirmSale() por si el envío automático a Google Sheets falla.
 // ============================================================
 function copyData() {
   navigator.clipboard.writeText(window._lastExportRows).then(() => {
@@ -1892,6 +1958,8 @@ function copyData() {
 
 // ============================================================
 // NUEVA VENTA
+// Reinicia todo el estado y los campos del formulario para
+// empezar a registrar una venta desde cero.
 // ============================================================
 function newSale() {
   cart = [];
@@ -1900,7 +1968,8 @@ function newSale() {
 
   document.getElementById('client-name').value = '';
   document.getElementById('vendedor').value = '';
-  document.getElementById('referencia').value = '';
+  document.getElementById('caja').value = '';
+  document.getElementById('comentarios').value = '';
   document.getElementById('product-code').value = '';
   document.getElementById('product-qty').value = 1;
   document.getElementById('check-discount-type').value = 'none';
@@ -1920,7 +1989,9 @@ function newSale() {
 }
 
 // ============================================================
-// QR SCANNER
+// LECTOR DE QR
+// Abre la cámara y busca en el texto leído un número de 3-4
+// dígitos (el código de producto) para autocompletar el campo.
 // ============================================================
 function openQR() {
   document.getElementById('qr-modal').classList.add('visible');
@@ -1943,6 +2014,7 @@ function openQR() {
   ).catch(() => showToast('No se pudo acceder a la cámara'));
 }
 
+// Cierra el modal del QR y detiene la cámara para liberar el recurso
 function closeQR() {
   document.getElementById('qr-modal').classList.remove('visible');
   if (qrScanner) {
@@ -1952,7 +2024,9 @@ function closeQR() {
 }
 
 // ============================================================
-// CATÁLOGO DISPLAY
+// VISTA PREVIA DEL CATÁLOGO
+// Solo muestra los primeros 6 productos de CATALOG a modo de
+// confirmación visual de que el catálogo cargó correctamente.
 // ============================================================
 function renderCatalog() {
   const el = document.getElementById('catalog-display');
@@ -1981,11 +2055,13 @@ function showCatalogHelp() {
 // ============================================================
 // UTILIDADES
 // ============================================================
+// Formatea un número como pesos colombianos: 52000 -> "$52.000"
 function formatPrice(n) {
   return '$' + n.toLocaleString('es-CO');
 }
 
 let toastTimer;
+// Muestra un mensaje flotante breve (aviso) en la parte inferior
 function showToast(msg) {
   const t = document.getElementById('toast');
   t.textContent = msg;
